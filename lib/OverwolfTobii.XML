@@ -1,0 +1,722 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OverwolfTobii</name>
+    </assembly>
+    <members>
+        <member name="T:Overwolf.Tobii.TobiiHelper">
+            <summary>
+            An API allowing integration of Overwolf with Tobii EyeX or SteelSeries Sentry eye trackers.
+            </summary>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.#ctor(System.Int32)">
+            <summary>
+            Constructor called when an associated ODKWindow was found and its handle can be supplied.
+            </summary>
+            <param name="nativeWindowHandle">Window handle id for the ODKWindow associated with this TobiiHelper instance.</param>
+            <remarks>Currently this specific constructor is not needed since we had to back away from 
+            using EyeX Engine region-based interactors in this first version of the Tobii EyeX API for Overwolf. 
+            Kept for future needs and compatibility.</remarks>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.#ctor">
+            <summary>
+            Constructor called when an associated ODKWindow cannot be found.
+            </summary>
+            <remarks>The two separate constructors are not needed for the current implementation, but kept
+            for future needs. See remark for the other constructor.</remarks>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.init">
+            <summary>
+            Initializes the Tobii EyeX API for Overwolf.
+            </summary>
+            <remarks>
+            Call this as soon as you are ready to start getting events and calling other methods in the Tobii EyeX API.
+            </remarks>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.getGazePoint(System.Action{System.Object})">
+            <summary>
+            Retrieves the most recent gaze point.
+            </summary>
+            <param name="callback">A callback function that will receive a single parameter – an object representing 
+            the most recent gaze point (X,Y,Timestamp), where (X,Y) are the coordinates of the gaze point.
+            If a game is in focus, the coordinates are given relative to the top left corner of the game window. 
+            If no game is in focus, the coordinates are given in screen coordinates, where (0,0) is the top left corner 
+            of the primary screen.
+            The Timestamp is given in milliseconds and can be used to compare how old different gaze point data objects are.
+            <example>
+            <code language="JSON">{ X: 55, Y: 120, Timestamp:  103481245.00 }</code>
+            </example>
+            </param>
+            <remarks>
+            The gaze point object may be if null if there is no eye position data available.
+            Use the <see cref="E:Overwolf.Tobii.TobiiHelper.onGazePoint"/> event to get events with the most recent gaze point.
+            </remarks>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.getUserPresence(System.Action{System.Object})">
+            <summary>
+            Retrieves the user presence state {IsValid=true/false, Value=Present/NotPresent}. 
+            </summary>
+            <remarks>
+            IsValid may return false when the eye tracker device is not connected or if there are problems connecting 
+            to the EyeX Engine. If IsValid is true, you can check whether any user is in front of the eye tracker by 
+            checking if the Value is Present or NotPresent.
+            </remarks>
+            <param name="callback">A callback function that receives the presence state (Present/NotPresent).</param>
+            <seealso cref="E:Overwolf.Tobii.TobiiHelper.onUserPresenceChanged"/>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.getEyePositionData(System.Action{System.Object})">
+            <summary>
+            Retrieves the most recent position of the user's right eye and left eye. 
+            </summary>
+            <param name="callback">
+            A callback function that will receive a single parameter – an object representing 
+            the most recent eye position data (RightEye, LeftEye, Timestamp).
+            Each eye position (RightEye and LeftEye) has the following values: (IsValid, X, Y, Z). 
+            X, Y, Z are coordinates in millimeters in a 3D coordinate system centered 
+            on the middle of the user's screen: the X axis points to the right on the screen, 
+            the Y axis points upwards on the screen, and the Z axis points outwards, perpendicular 
+            to the screen surface, toward the user.
+            </param>
+            <example>
+            <code language="JSON"> 
+            {RightEye: {IsValid: true, X: 20.00, Y: 70.00, Z: 595.00}, 
+             LeftEye: {IsValid: true, X: -30.00, Y:72.00, Z: 605.00}, 
+             Timestamp: 103481245.00 }
+            </code>
+            </example>
+            <remarks>
+            One of the eye positions (RightEye or LeftEye) may be invalid at any time.
+            The eye position data object may be null if there is no eye position data available.
+            </remarks>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.Dispose">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+            <skip/>
+        </member>
+        <member name="M:Overwolf.Tobii.TobiiHelper.Dispose(System.Boolean)">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+            <param name="isDisposing">true if managed resources should be disposed; otherwise, false.</param>
+            <skip/>
+        </member>
+        <member name="E:Overwolf.Tobii.TobiiHelper.onGazePoint">
+            <summary>
+            Register to receive gaze point changes ({X,Y,Timestamp}).
+            </summary>
+            <remarks>
+            See the <see cref="M:Overwolf.Tobii.TobiiHelper.getGazePoint(System.Action{System.Object})"/> method for more info.
+            </remarks>
+        </member>
+        <member name="E:Overwolf.Tobii.TobiiHelper.onUserPresenceChanged">
+            <summary>
+            Register to receive user presence state changes  ({IsValid=true/false, Value=Present/NotPresent}).
+            </summary>
+            <remarks>
+            See the <see cref="M:Overwolf.Tobii.TobiiHelper.getUserPresence(System.Action{System.Object})"/> method for more info.
+            </remarks>
+        </member>
+        <member name="E:Overwolf.Tobii.TobiiHelper.onEyePositionData">
+            <summary>
+            Register to receive eye position data changes ({RightEye:{IsValid,X,Y,Z}, LeftEye: {IsValid,X,Y,Z}, Timestamp}).
+            </summary>
+            <remarks>
+            See the <see cref="M:Overwolf.Tobii.TobiiHelper.getEyePositionData(System.Action{System.Object})"/> method for more info.
+            </remarks>
+        </member>
+        <member name="T:EyeXFramework.DataStreamBase`1">
+            <summary>
+            Abstract base class for data stream observers.
+            Observes a data stream and raises events when new data points become available.
+            </summary>
+            <typeparam name="T">Data type of the events.</typeparam>
+        </member>
+        <member name="T:EyeXFramework.IDataStreamObserver">
+            <summary>
+            Interface for a data stream observer.
+            This is an internal interface used by the EyeXHost.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.IDataStreamObserver.CreateInteractor(Tobii.EyeX.Client.Snapshot)">
+            <summary>
+            Creates an interactor for the data stream.
+            </summary>
+            <param name="snapshot">Snapshot to add the interactor to.</param>
+        </member>
+        <member name="M:EyeXFramework.IDataStreamObserver.HandleEvent(System.Object,Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Handles an event from the EyeX Engine.
+            </summary>
+            <param name="sender">Object associated with the interactor.</param>
+            <param name="event_">Event to be handled.</param>
+        </member>
+        <member name="E:EyeXFramework.IDataStreamObserver.Disposed">
+            <summary>
+            Event raised when the observer is disposed.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.IDataStreamObserver.Id">
+            <summary>
+            Gets the unique ID of the observer.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.DataStreamBase`1"/> class.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.Dispose">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.Dispose(System.Boolean)">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+            <param name="disposing">Indicates whether managed resources should be disposed.</param>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.AssignBehavior(Tobii.EyeX.Client.Interactor)">
+            <summary>
+            Assigns the behavior corresponding to the data stream type to an interactor.
+            </summary>
+            <param name="interactor">The global interactor to add the data stream behavior to.</param>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.ExtractDataPoints(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Extracts data points from an event from the EyeX Engine.
+            </summary>
+            <param name="event_">The event to be handled.</param>
+            <returns>The collection of data points.</returns>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.EyeXFramework#IDataStreamObserver#CreateInteractor(Tobii.EyeX.Client.Snapshot)">
+            <summary>
+            Explicit implementation of <see cref="M:EyeXFramework.IDataStreamObserver.CreateInteractor(Tobii.EyeX.Client.Snapshot)"/>.
+            </summary>
+            <param name="snapshot">Snapshot to add the interactor to.</param>
+        </member>
+        <member name="M:EyeXFramework.DataStreamBase`1.EyeXFramework#IDataStreamObserver#HandleEvent(System.Object,Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Explicit implementation of <see cref="M:EyeXFramework.IDataStreamObserver.HandleEvent(System.Object,Tobii.EyeX.Client.InteractionEvent)"/>.
+            </summary>
+            <param name="sender">Object associated with the interactor.</param>
+            <param name="event_">Event to be handled.</param>
+        </member>
+        <member name="E:EyeXFramework.DataStreamBase`1.Next">
+            <summary>
+            Event raised when a data point is available.
+            </summary>
+        </member>
+        <member name="E:EyeXFramework.DataStreamBase`1.EyeXFramework#IDataStreamObserver#Disposed">
+            <summary>
+            Explicit implementation of <see cref="E:EyeXFramework.IDataStreamObserver.Disposed"/>.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.DataStreamBase`1.EyeXFramework#IDataStreamObserver#Id">
+            <summary>
+            Gets the <see cref="P:EyeXFramework.IDataStreamObserver.Id"/>.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.EngineStateAccessor`1">
+            <summary>
+            Accesses and monitors engine states.
+            Used by the EyeXHost.
+            </summary>
+            <typeparam name="T">Data type of the engine state.</typeparam>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.#ctor(System.String,Tobii.EyeX.Client.AsyncDataHandler)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.EngineStateAccessor`1"/> class.
+            </summary>
+            <param name="statePath">The state path.</param>
+            <param name="handler">Callback to be invoked when the state changes.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.GetCurrentValue(Tobii.EyeX.Client.Context)">
+            <summary>
+            Gets the current value of the engine state.
+            This is a blocking operation that must not be invoked from one of the EyeX worker threads.
+            </summary>
+            <param name="context">The interaction context.</param>
+            <returns>The state value.</returns>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.RegisterListener(System.EventHandler{EyeXFramework.EngineStateValue{`0}},Tobii.EyeX.Client.Context)">
+            <summary>
+            Registers a listener for state-changed events.
+            </summary>
+            <param name="listener">Event listener to be registered.</param>
+            <param name="context">The interaction context.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.UnregisterListener(System.EventHandler{EyeXFramework.EngineStateValue{`0}},Tobii.EyeX.Client.Context)">
+            <summary>
+            Unregisters a listener for state-changed events.
+            </summary>
+            <param name="listener">Event listener to be unregistered.</param>
+            <param name="context">The interaction context.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.HandleStateChanged(Tobii.EyeX.Client.StateBag,System.Object)">
+            <summary>
+            Handles a state-changed event that may or may not affect the state path handled by this instance.
+            </summary>
+            <param name="stateBag">Event data.</param>
+            <param name="sender">The source of the event.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.OnContextCreated(Tobii.EyeX.Client.Context)">
+            <summary>
+            Method to be invoked when the interaction context has been created.
+            </summary>
+            <param name="context">The interaction context.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.OnConnected(Tobii.EyeX.Client.Context)">
+            <summary>
+            Method to be invoked when a connection to the EyeX Engine has been established.
+            </summary>
+            <param name="context">The interaction context.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateAccessor`1.OnDisconnected">
+            <summary>
+            Method to be invoked when the connection to the EyeX Engine has been lost.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.EngineStateValue`1">
+            <summary>
+            Holds an engine state value and a flag indicating the validity of the value.
+            </summary>
+            <typeparam name="T">Data type of the engine state.</typeparam>
+        </member>
+        <member name="M:EyeXFramework.EngineStateValue`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.EngineStateValue`1"/> class.
+            </summary>
+            <param name="value">The state handler.</param>
+        </member>
+        <member name="M:EyeXFramework.EngineStateValue`1.ToString">
+            <summary>
+            Returns a string that represents the current object.
+            </summary>
+            <returns>A string that represents the current object.</returns>
+        </member>
+        <member name="P:EyeXFramework.EngineStateValue`1.Invalid">
+            <summary>
+            Gets a value representing an invalid state value.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EngineStateValue`1.Value">
+            <summary>
+            Gets the state value.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EngineStateValue`1.IsValid">
+            <summary>
+            Gets a value indicating whether the state value is valid.
+            The state will always be unknown when disconnected from the EyeX Engine.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.EyePositionDataStream">
+            <summary>
+            Provides a stream of eye position data, that is, eye positions in 3D space.
+            See <see cref="T:EyeXFramework.EyePositionEventArgs"/>.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyePositionDataStream.AssignBehavior(Tobii.EyeX.Client.Interactor)">
+            <summary>
+            Assigns the behavior corresponding to the data stream type to an interactor.
+            </summary>
+            <param name="interactor">The global interactor to add the data stream behavior to.</param>
+        </member>
+        <member name="M:EyeXFramework.EyePositionDataStream.ExtractDataPoints(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Extracts data points from an event from the EyeX Engine.
+            </summary>
+            <param name="event_">The event to be handled.</param>
+            <returns>The collection of data points.</returns>
+        </member>
+        <member name="T:EyeXFramework.EyePositionEventArgs">
+            <summary>
+            Provides event data for the eye position data stream.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyePositionEventArgs.#ctor(EyeXFramework.EyePosition,EyeXFramework.EyePosition,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.EyePositionEventArgs"/> class.
+            </summary>
+            <param name="leftEye">Position of the left eye.</param>
+            <param name="rightEye">Position of the right eye.</param>
+            <param name="timestamp">The point in time when the data point was captured. Milliseconds.</param>
+        </member>
+        <member name="P:EyeXFramework.EyePositionEventArgs.LeftEye">
+            <summary>
+            Gets the position of the left eye.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyePositionEventArgs.RightEye">
+            <summary>
+            Gets the position of the right eye.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyePositionEventArgs.Timestamp">
+            <summary>
+            Gets the point in time when the data point was captured. Milliseconds.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.EyePosition">
+            <summary>
+            Position of an eye in 3D space.
+            The position is taken relative to the center of the screen where the eye tracker is mounted.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyePosition.#ctor(System.Boolean,System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.EyePosition"/> class.
+            </summary>
+            <param name="isValid">Flag indicating if the eye position is valid. (Sometimes only a single eye is tracked.)</param>
+            <param name="x">X coordinate of the eye position, in millimeters.</param>
+            <param name="y">Y coordinate of the eye position, in millimeters.</param>
+            <param name="z">Z coordinate of the eye position, in millimeters.</param>
+        </member>
+        <member name="P:EyeXFramework.EyePosition.IsValid">
+            <summary>
+            Gets a value indicating whether the eye position is valid. (Sometimes only a single eye is tracked.)
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyePosition.X">
+            <summary>
+            Gets the X coordinate of the eye position, in millimeters.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyePosition.Y">
+            <summary>
+            Gets the Y coordinate of the eye position, in millimeters.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyePosition.Z">
+            <summary>
+            Gets the Z coordinate of the eye position, in millimeters.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.EyeXHost">
+            <summary>
+            Base class for EyeX Hosts, independent of GUI frameworks.
+            Provides the main point of contact with the EyeX Engine.
+            </summary>
+        </member>
+        <member name="F:EyeXFramework.EyeXHost._context">
+            <summary>
+            EyeX context representing the connection to the EyeX Engine.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.EyeXHost"/> class.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.Dispose">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.Start(System.String)">
+            <summary>
+            Starts up the connection to the EyeX Engine
+            </summary>
+            <param name="processId">Process id to use for query handler</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CreateGazePointDataStream(Tobii.EyeX.Framework.GazePointDataMode)">
+            <summary>
+            Gets a gaze point data stream.
+            </summary>
+            <param name="mode">Specifies the kind of data processing to be applied by the EyeX Engine.</param>
+            <returns>The data stream.</returns>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CreateFixationDataStream(Tobii.EyeX.Framework.FixationDataMode)">
+            <summary>
+            Gets a fixation data stream.
+            </summary>
+            <param name="mode">Specifies the kind of data processing to be applied by the EyeX Engine.</param>
+            <returns>The data stream.</returns>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CreateEyePositionDataStream">
+            <summary>
+            Gets an eye position data stream.
+            </summary>
+            <returns>The data stream.</returns>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.TriggerActivation">
+            <summary>
+            Trigger an activation ("gaze click").
+            Use this method if you want to bind the click command to a key other than the one used 
+            by the EyeX Engine -- or to something other than a key press event.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.Dispose(System.Boolean)">
+            <summary>
+            Cleans up any resources being used.
+            </summary>
+            <param name="isDisposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.HandleQuery(Tobii.EyeX.Client.Query)">
+            <summary>
+            Handles a query from the EyeX Engine.
+            </summary>
+            <param name="query">Query to be handled.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.HandleEvent(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Handles an event from the EyeX Engine.
+            </summary>
+            <param name="event_">Event to be handled.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.OnEngineStateChanged(Tobii.EyeX.Client.AsyncData)">
+            <summary>
+            Handles a state changed notification from the EyeX Engine.
+            </summary>
+            <param name="asyncData">Notification data packet.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.OnConnectionStateChanged(System.Object,Tobii.EyeX.Client.ConnectionStateChangedEventArgs)">
+            <summary>
+            Handles a connection-state-changed notification from the EyeX Engine.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="e">Event parameters.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.HandleDataStreamEvent(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Check if the event is for one of the data streams bound to this host. 
+            If it is, then let the data stream handle it.
+            </summary>
+            <param name="event_">Event to be handled.</param>
+            <returns>True if the event was handled.</returns>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CreateSnapshot">
+            <summary>
+            Creates a snapshot.
+            </summary>
+            <returns>A snapshot.</returns>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CreateSnapshot(Tobii.EyeX.Client.Query)">
+            <summary>
+            Creates a snapshot using the bounds and window id's from the given query.
+            </summary>
+            <returns>A snapshot.</returns>
+            <param name="query">The query that spawned the snapshot creation.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.CommitSnapshot(Tobii.EyeX.Client.Snapshot)">
+            <summary>
+            Commits the snapshot asynchronously to the EyeX Engine.
+            </summary>
+            <param name="snapshot">The snapshot to be committed.</param>
+        </member>
+        <member name="M:EyeXFramework.EyeXHost.OnSnapshotCommitted(Tobii.EyeX.Client.AsyncData)">
+            <summary>
+            Callback method useful during application development to find malformed or
+            incorrectly set up snapshots and interactors.
+            </summary>
+            <param name="asyncData">Data packet that contains value code and error messages.</param>
+        </member>
+        <member name="E:EyeXFramework.EyeXHost.ScreenBoundsChanged">
+            <summary>
+            Event raised when the screen bounds have changed.
+            </summary>
+        </member>
+        <member name="E:EyeXFramework.EyeXHost.DisplaySizeChanged">
+            <summary>
+            Event raised when the display size has changed.
+            </summary>
+        </member>
+        <member name="E:EyeXFramework.EyeXHost.EyeTrackingDeviceStatusChanged">
+            <summary>
+            Event raised when the eye tracking device status has changed.
+            </summary>
+        </member>
+        <member name="E:EyeXFramework.EyeXHost.UserPresenceChanged">
+            <summary>
+            Event raised when the user presence status has changed.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyeXHost.ScreenBounds">
+            <summary>
+            Gets the engine state: Screen bounds in pixels.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyeXHost.DisplaySize">
+            <summary>
+            Gets the engine state: Display size, width and height, in millimeters.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyeXHost.EyeTrackingDeviceStatus">
+            <summary>
+            Gets the engine state: Eye tracking status.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.EyeXHost.UserPresence">
+            <summary>
+            Gets the engine state: User presence.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.FixationDataStream">
+            <summary>
+            Provides a stream of fixation data.
+            See <see cref="T:EyeXFramework.FixationEventArgs"/>.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.FixationDataStream.#ctor(Tobii.EyeX.Framework.FixationDataMode)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.FixationDataStream"/> class.
+            </summary>
+            <param name="mode">Specifies the kind of fixation detection to be used.</param>
+        </member>
+        <member name="M:EyeXFramework.FixationDataStream.AssignBehavior(Tobii.EyeX.Client.Interactor)">
+            <summary>
+            Assigns the behavior corresponding to the data stream type to an interactor.
+            </summary>
+            <param name="interactor">The global interactor to add the data stream behavior to.</param>
+        </member>
+        <member name="M:EyeXFramework.FixationDataStream.ExtractDataPoints(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Extracts data points from an event from the EyeX Engine.
+            </summary>
+            <param name="event_">The event to be handled.</param>
+            <returns>The collection of data points.</returns>
+        </member>
+        <member name="P:EyeXFramework.FixationDataStream.Mode">
+            <summary>
+            Gets the kind of fixation detection used.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.FixationEventArgs">
+            <summary>
+            Provides event data for the fixation data stream.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.FixationEventArgs.#ctor(Tobii.EyeX.Framework.FixationDataEventType,System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.FixationEventArgs"/> class.
+            </summary>
+            <param name="eventType">Specifies the kind of fixation event that occurred.</param>
+            <param name="x">X coordinate of the gaze point in physical pixels.</param>
+            <param name="y">Y coordinate of the gaze point in physical pixels.</param>
+            <param name="timestamp">Timestamp in milliseconds.</param>
+        </member>
+        <member name="P:EyeXFramework.FixationEventArgs.EventType">
+            <summary>
+            Gets the kind of fixation event that occurred.
+            The sequence is: Begin, [Data, ...], End.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.FixationEventArgs.X">
+            <summary>
+            Gets the X coordinate of the gaze point in physical pixels.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.FixationEventArgs.Y">
+            <summary>
+            Gets the Y coordinate of the gaze point in physical pixels.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.FixationEventArgs.Timestamp">
+            <summary>
+            Gets the timestamp in milliseconds.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.GazePointDataStream">
+            <summary>
+            Provides a stream of gaze point data.
+            See <see cref="T:EyeXFramework.GazePointEventArgs"/>.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.GazePointDataStream.#ctor(Tobii.EyeX.Framework.GazePointDataMode)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.GazePointDataStream"/> class.
+            </summary>
+            <param name="mode">Specifies the kind of processing applied to the eye-gaze data.</param>
+        </member>
+        <member name="M:EyeXFramework.GazePointDataStream.AssignBehavior(Tobii.EyeX.Client.Interactor)">
+            <summary>
+            Assigns the behavior corresponding to the data stream type to an interactor.
+            </summary>
+            <param name="interactor">The global interactor to add the data stream behavior to.</param>
+        </member>
+        <member name="M:EyeXFramework.GazePointDataStream.ExtractDataPoints(Tobii.EyeX.Client.InteractionEvent)">
+            <summary>
+            Extracts data points from an event from the EyeX Engine.
+            </summary>
+            <param name="event_">The event to be handled.</param>
+            <returns>The collection of data points.</returns>
+        </member>
+        <member name="P:EyeXFramework.GazePointDataStream.Mode">
+            <summary>
+            Gets the kind of processing applied to the eye-gaze data.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.GazePointEventArgs">
+            <summary>
+            Provides event data for the gaze point data stream.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.GazePointEventArgs.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:EyeXFramework.GazePointEventArgs"/> class.
+            </summary>
+            <param name="x">X coordinate in physical pixels.</param>
+            <param name="y">Y coordinate in physical pixels.</param>
+            <param name="timestamp">The point in time when the data point was captured. Milliseconds.</param>
+        </member>
+        <member name="P:EyeXFramework.GazePointEventArgs.X">
+            <summary>
+            Gets the X coordinate in physical pixels.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.GazePointEventArgs.Y">
+            <summary>
+            Gets the Y coordinate in physical pixels.
+            </summary>
+        </member>
+        <member name="P:EyeXFramework.GazePointEventArgs.Timestamp">
+            <summary>
+            Gets the point in time when the data point was captured. Milliseconds.
+            </summary>
+        </member>
+        <member name="T:EyeXFramework.InteractorIDGenerator">
+            <summary>
+            Generates unique IDs for interactors.
+            </summary>
+        </member>
+        <member name="M:EyeXFramework.InteractorIDGenerator.CreateUniqueID">
+            <summary>
+            Returns a unique ID.
+            </summary>
+            <returns>A unique ID.</returns>
+        </member>
+        <member name="T:Overwolf.Tobii.OverwolfGameWindowManager">
+            <summary>
+            Listens to the registry value 
+            </summary>
+        </member>
+        <member name="M:Overwolf.Tobii.OverwolfGameWindowManager.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Overwolf.Tobii.OverwolfGameWindowManager"/> class.
+            </summary>
+        </member>
+        <member name="M:Overwolf.Tobii.OverwolfGameWindowManager.ListenToGameWindowChangedEvent">
+            <summary>
+            Copied from http://www.codeproject.com/Articles/11498/Interop-Waiting-in-C-on-External-Win-Events
+            </summary>
+        </member>
+        <member name="P:Overwolf.Tobii.OverwolfGameWindowManager.HasGameWindow">
+            <summary>
+            Gets a value indicating whether there is a game window.
+            </summary>
+        </member>
+        <member name="P:Overwolf.Tobii.OverwolfGameWindowManager.WindowHandle">
+            <summary>
+            Gets the window handle of the Game Window, returns 0 if there is no game window.
+            </summary>
+        </member>
+        <member name="P:Overwolf.Tobii.OverwolfGameWindowManager.Position">
+            <summary>
+            Gets the top-left position of the game window, in Windows desktop coordinates.
+            </summary>
+        </member>
+    </members>
+</doc>
